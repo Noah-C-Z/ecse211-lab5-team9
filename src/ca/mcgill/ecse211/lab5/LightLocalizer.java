@@ -1,7 +1,8 @@
-package ca.mcgill.ecse211.lab4;
+package ca.mcgill.ecse211.lab5;
 
-import static ca.mcgill.ecse211.lab4.Resources.*;
-import ca.mcgill.ecse211.lab4.Main;
+import static ca.mcgill.ecse211.lab5.Resources.*;
+
+import ca.mcgill.ecse211.lab5.Main;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 

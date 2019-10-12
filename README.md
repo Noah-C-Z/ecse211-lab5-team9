@@ -1,4 +1,4 @@
-# ECSE-211 W2019 Lab 5
+# ECSE-211 F2019 Lab 5 (Ball Launcher)
 
 **Team member** | **Role**
 ---|---

@@ -1,4 +1,4 @@
-package ca.mcgill.ecse211.lab4;
+package ca.mcgill.ecse211.lab5;
 
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
@@ -131,4 +131,10 @@ public class Resources {
    * The color sensor.
    */
   public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S1);
+  
+  /**
+   * The dimensions sizes in squares
+   */
+  public static final int ARENA_X = 8;
+  public static final int ARENA_Y = 8;
 }

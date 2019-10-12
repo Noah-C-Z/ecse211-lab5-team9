@@ -1,6 +1,7 @@
-package ca.mcgill.ecse211.lab4;
+package ca.mcgill.ecse211.lab5;
 
-import static ca.mcgill.ecse211.lab4.Resources.*;
+import static ca.mcgill.ecse211.lab5.Resources.*;
+
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
@@ -9,11 +10,6 @@ public class Navigation {
    * Lets other methods know if the robot is currently navigating to a waypoint.
    */
   private static boolean isNavigating;
-  
-  /**
-   * A filter for the ultrasonic sensor to ensure an object has actually been seen.
-   */
-  private int usFilter;
   
   /**
    * An array containing the current X, Y, and theta of the robot, as given by the odometer.
@@ -152,4 +148,28 @@ public class Navigation {
     return Math.sqrt((Math.pow((deltaX), 2) + Math.pow((deltaY), 2)));
   }
   
+  /**
+   * moves the robot forward by x many tile lengths
+   * @param i number of tile lengths
+   */
+  public static void moveForwardByTile(int i) {
+	  leftMotor.rotate(convertDistance(TILE_SIZE * i), true);
+	  rightMotor.rotate(convertDistance(TILE_SIZE * i), false);
+  }
+  
+  /**
+   * turns the robot 90 degrees left
+   */
+  public static void turnLeft() {
+	  leftMotor.rotate(convertAngle(-90.0), true);
+	  rightMotor.rotate(convertAngle(90.0), false);
+  }
+  
+  /**
+   * turns the robot 90 degrees right
+   */
+  public static void turnRight() {
+	  leftMotor.rotate(convertAngle(90.0), true);
+	  rightMotor.rotate(convertAngle(-90.0), false);
+  }
 }
