@@ -133,6 +133,11 @@ public class Resources {
   public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S1);
   
   /**
+   * Odometry correction
+   */
+  public static final OdometryCorrection odometryCorrection = new OdometryCorrection();
+  
+  /**
    * The dimensions sizes in squares
    */
   public static final int ARENA_X = 8;

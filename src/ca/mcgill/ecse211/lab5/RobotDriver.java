@@ -2,11 +2,14 @@ package ca.mcgill.ecse211.lab5;
 
 import java.util.Arrays;
 
-import ca.mcgill.ecse211.lab5.Navigation.*;
+import ca.mcgill.ecse211.lab5.OdometryCorrection.WorkingState;
 import ca.mcgill.ecse211.lab5.Resources;
 
 
 public class RobotDriver {
+	//integers to hold which square the robot is currently in
+	public static int x = 0;
+	public static int y = 0;
 	
 	/**
 	 * assuming the robot starts from the middle of the 0,0 square, this moves the robot
@@ -22,10 +25,18 @@ public class RobotDriver {
 				for (int[] move : moveList) { 
 				//YP: this is subject to change because it does not account for negative moves, 
 				//since we always start from 0,0, so subject to change...
-					Navigation.moveForwardByTile(move[1]);
+					for (int i = 0; i < move[1]; i++) {
+						Navigation.moveForwardByTile(move[1]);
+						RobotDriver.y++;
+					}
 					Navigation.turnRight();
-					Navigation.moveForwardByTile(move[0]);
+					Resources.odometryCorrection.state = WorkingState.HORIZONTAL; 
+					for (int j = 0; j < move [0]; j++) {
+						Navigation.moveForwardByTile(move[0]);
+						RobotDriver.x++;
+					}
 					Navigation.turnLeft();
+					Resources.odometryCorrection.state = WorkingState.VERTICAL; 
 				}
 			}
 		}).start();
