@@ -45,7 +45,7 @@ public class Resources {
   /**
    * Distance to light sensor from center of rotation in centimeters
    */
-  public static final double SENSOR_RADIUS = 12;
+  public static final double SENSOR_RADIUS = 14.3;
   
   /**
    * The wheel radius in centimeters.
@@ -66,6 +66,11 @@ public class Resources {
    * The speed at which the robot rotates in degrees per second.
    */
   public static final int ROTATE_SPEED = 60;
+  
+  /**
+   * Low speed used for more accurate sensor readins
+   */
+  public static final int LOW_SPEED = 15;
 
   /**
    * The motor acceleration in degrees per second squared.
@@ -82,10 +87,6 @@ public class Resources {
    */
   public static final double TILE_SIZE = 30.48;
 
-  /**
-   * Filter for the distance reported by the ultrasonic sensor.
-   */
-  public static final double FILTER_OUT = 10;
 
   /**
    * The furthest the ultrasonic distance can effectively see.
