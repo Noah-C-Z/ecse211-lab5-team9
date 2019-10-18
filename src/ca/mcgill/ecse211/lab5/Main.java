@@ -26,7 +26,7 @@ public class Main {
 		new Thread (odometryCorrection).start();
 		Button.waitForAnyPress();
 		RobotDriver.getReadyToShoot(2, 6);
-		//LightLocalizer.Localize(); // Perform light localization
+		LightLocalizer.Localize(); // Perform light localization
 		Button.waitForAnyPress();
 		System.exit(0);
 	}
