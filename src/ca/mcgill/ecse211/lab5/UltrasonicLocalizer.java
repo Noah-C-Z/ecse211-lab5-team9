@@ -2,298 +2,167 @@ package ca.mcgill.ecse211.lab5;
 
 import static ca.mcgill.ecse211.lab5.Resources.*;
 
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
+public class UltrasonicLocalizer implements Runnable{
 
-public class UltrasonicLocalizer {
-  
-  /**
-   * Constructor. Initializes all values.
-   */
-  public UltrasonicLocalizer() {
-    prevUSDistance = usPoller.getDistance();
-    filterControl = 0;
-    leftWallAngle = -1;
-    backWallAngle = -1;
-    initialNoiseMarginAngle= -1;
-    finalNoiseMarginAngle = -1;
-    minUSDistance = MAX_US_DISTANCE;
-  }
-  
-  /**
-   * Distance from the robot to the wall as reported by the ultrasonic sensor.
-   */
-  private static int usDistance;
-  
-  /**
-   * The previous distance reported by the ultrasonic sensor.
-   */
-  private static int prevUSDistance;
-  
-  /**
-   * Used to help filter the distance returned by the ultrasonic sensor.
-   */
-  private static int filterControl;
-  
-  /**
-   * The angle at which the robot found the left wall. 
-   */
-  private static double leftWallAngle;
-  
-  /**
-   * The angle at which the robot found the back wall.
-   */
-  private static double backWallAngle;
-  
-  /**
-   * The angle where the signal first crosses into the noise margin.
-   */
-  private static double initialNoiseMarginAngle;
-  
-  /**
-   * The angle where the signal exits the noise margin.
-   */
-  private static double finalNoiseMarginAngle;
-  
-  /**
-   * Holds whether or not the program is searching for the left wall or not.
-   */
-  private static boolean isSearchingForLeftWall;
-  
-  /**
-   * The value of the smallest distance that the ultrasonic sensor reads.
-   */
-  private static int minUSDistance;
-  
-  /**
-   * Localizes the robot using the ultrasonic sensor. The robot will rotate until it encounters a rising edge, then it
-   * will stop, record the angle, then rotate the other direction until it encounters another rising edge. It will then
-   * record that second angle, and correct the odometer theta.
-   */
-  public void localizeWithRisingEdge() {
-    isSearchingForLeftWall = true;
-    waitForStableUSDistance();
-    leftMotor.setSpeed(ROTATE_SPEED);
-    rightMotor.setSpeed(ROTATE_SPEED);
-    leftMotor.forward();
-    rightMotor.backward();
-    while (true) {
-      filter(usPoller.getDistance()); // Update the usDistance variable with the filtered distance value
-      if (usDistance < minUSDistance) {
-        minUSDistance = usDistance;
-      }
-      if (foundRisingEdge()) {
-        recordAngle();
-      }
-      // If both angles have been set, then break
-      if (leftWallAngle > 0 && backWallAngle > 0) {
-        break;
-      }
-      // Run the loop at approximately 20 Hz
-      try {
-        Thread.sleep(50);
-      } catch (Exception e) {
-      }
-    }
-    leftMotor.stop(true);
-    rightMotor.stop(false);
-    // Fix the heading of the robot, then turn to 0 degrees. Wait for the TA to measure the angle, then adjust the
-    // position of the robot so it can perform light localization.
-    fixHeading();
-    Navigation.turnTo(0);
-    Button.waitForAnyPress();
-    adjustPosition();
-  }
-  
-  /**
-   * Localizes the robot using the ultrasonic sensor. The robot will rotate until it encounters a falling edge, then it
-   * will stop, record the angle, then rotate the other direction until it encounters another falling edge. It will then
-   * record that second angle, and correct the odometer theta.
-   */
-  public void localizeWithFallingEdge() {
-    isSearchingForLeftWall = false;
-    waitForStableUSDistance();
-    leftMotor.setSpeed(ROTATE_SPEED);
-    rightMotor.setSpeed(ROTATE_SPEED);
-    leftMotor.forward();
-    rightMotor.backward();
-    while (true) {
-      filter(usPoller.getDistance()); // Update the usDistance variable with the filtered distance value
-      if (usDistance < minUSDistance) {
-        minUSDistance = usDistance;
-      }
-      if (foundFallingEdge()) {
-        recordAngle();
-      }
-      // If both angles have been set, then break
-      if (leftWallAngle > 0 && backWallAngle > 0) {
-        break;
-      }
-      // Run the loop at approximately 20 Hz
-      try {
-        Thread.sleep(50);
-      } catch (Exception e) {
-      }
-    }
-    leftMotor.stop(true);
-    rightMotor.stop(false);
-    // Fix the heading of the robot, then turn to 0 degrees. Wait for the TA to measure the angle, then adjust the
-    // position of the robot so it can perform light localization.
-    fixHeading();
-    Navigation.turnTo(0);
-    Button.waitForAnyPress();
-    adjustPosition();
-  }
-  
-  /**
-   * If the distance from the ultrasonic sensor is large enough, and the delta between the current and previous distance
-   * is also large enough and positive, it will assume the robot has encountered a rising edge. It will record the
-   * entrance angle, as well as the exit angle, and use them to approximate the angle at which the robot senses the
-   * rising edge.
-   * 
-   * @return true if the signal has passed through the threshold plus noise margin
-   */
-  private static boolean foundRisingEdge() {
-    // Once the signal exits the noise margin, capture the angle and let the caller know the edge was found
-    if ((usDistance > SIGNAL_THRESHOLD + NOISE_MARGIN) && deltaIsLargeEnough()) {
-      finalNoiseMarginAngle = odometer.getXYT()[2];
-      if (initialNoiseMarginAngle < 0) {
-        initialNoiseMarginAngle = finalNoiseMarginAngle;
-      }
-      Sound.beep();
-      return true;
-    }
-    // Once the signal enters the noise margin, capture the angle, but let the caller know the edge was not found
-    else if ((usDistance > SIGNAL_THRESHOLD - NOISE_MARGIN) && deltaIsLargeEnough()) {
-      initialNoiseMarginAngle = odometer.getXYT()[2];
-    }
-    return false;
-  }
-  
-  /**
-   * If the distance from the ultrasonic sensor is small enough, and the delta between the current and previous distance
-   * is also large enough and negative, it will assume the robot has encountered a falling edge. It will record the
-   * entrance angle, as well as the exit angle, and use them to approximate the angle at which the robot senses the
-   * falling edge.
-   * 
-   * @return true if the signal has passed through the threshold plus noise margin
-   */
-  private static boolean foundFallingEdge() {
-    // Once the signal exits the noise margin, capture the angle and let the caller know the edge was found
-    if ((usDistance < SIGNAL_THRESHOLD - NOISE_MARGIN) && deltaIsLargeEnough()) {
-      finalNoiseMarginAngle = odometer.getXYT()[2];
-      if (initialNoiseMarginAngle < 0) {
-        initialNoiseMarginAngle = finalNoiseMarginAngle;
-      }
-      Sound.beep();
-      return true;
-    }
-    // Once the signal enters the noise margin, capture the angle, but let the caller know the edge was not found
-    else if ((usDistance < SIGNAL_THRESHOLD + NOISE_MARGIN) && deltaIsLargeEnough()) {
-      initialNoiseMarginAngle = odometer.getXYT()[2];
-    }
-    return false;
-  }
-  
-  /**
-   * Using the threshold for the magnitude of the delta, it lets the caller know if the delta is big enough to count as
-   * a rising or falling edge.
-   * 
-   * @return true if the magnitude of the difference between the current and previous sensor distance is bigger than the
-   * threshold
-   */
-  private static boolean deltaIsLargeEnough() {
-    return Math.abs(usDistance - prevUSDistance) >= DELTA_THRESHOLD;
-  }
-  
-  /**
-   * Calculates the angle at which the rising or falling edge was detected, and sets it to the appropriate variable.
-   */
-  private static void recordAngle() {
-    leftMotor.stop(true);
-    rightMotor.stop(false);
-    double avgAngle = (finalNoiseMarginAngle + initialNoiseMarginAngle) / 2.0;
-    // Depending on which wall was found, update the corresponding variable and change the isSearchingForLeftWall
-    // boolean value.
-    if (isSearchingForLeftWall) {
-      leftWallAngle = avgAngle;
-      isSearchingForLeftWall = false;
-    }
-    else {
-      backWallAngle = avgAngle;
-      isSearchingForLeftWall = true;
-    }
-    // Clear values and make the robot turn the other way
-    initialNoiseMarginAngle = -1;
-    finalNoiseMarginAngle = -1;
-    leftMotor.backward();
-    rightMotor.forward();
-  }
-  
-  /**
-   * Using the left and back angles, updates the odometer with the corrected theta.
-   */
-  private static void fixHeading() {
-    double deltaTheta;
-    if (backWallAngle < leftWallAngle) {
-      deltaTheta = 45 - (backWallAngle + leftWallAngle) / 2.0;
-    }
-    else {
-      deltaTheta = 225 - (backWallAngle + leftWallAngle) / 2.0;
-    }
-    deltaTheta = (deltaTheta + 360) % 360;
-    odometer.setTheta(((odometer.getXYT()[2] + deltaTheta - 180) + 360) % 360);
-  }
-  
-  /**
-   * Moves the robot to approximately the (0.8,0.8) point so that it can perform the light localization successfully.
-   */
-  private static void adjustPosition() {
-    odometer.setX(minUSDistance + US_SENSOR_RADIUS);
-    odometer.setY(minUSDistance + US_SENSOR_RADIUS);
-    Navigation.travelTo(0.85 * TILE_SIZE, 0.85 * TILE_SIZE);
-    Navigation.turnTo(0);
-  }
-  
-  /**
-   * Loops endlessly until the poller begins reporting values other than zero. Without this function, a false positive
-   * can be detected.
-   */
-  private static void waitForStableUSDistance() {
-    while (true) {
-      filter(usPoller.getDistance());
-      if (usDistance > 0) {
-        break;
-      }
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-  
-  /**
-   * Filters the distance reported by the ultrasonic sensor. It doesn't allow the distance to surpass MAX_US_DISTANCE,
-   * since the maximum range of the sensor is not needed for the localization process.
-   * 
-   * @param newDistance the distance in cm to be filtered
-   */
-  private static void filter(int newDistance) {
-    if (newDistance >= MAX_US_DISTANCE && filterControl < FILTER_OUT) {
-      // bad value, do not set the distance var, however do increment the filter value
-      filterControl++; 
-    }
-    else if (newDistance >= MAX_US_DISTANCE) {
-      // Repeated large values, so there is nothing there: set distance to the max distance needed for this lab
-      prevUSDistance = usDistance;
-      usDistance = MAX_US_DISTANCE;
-    }
-    else {
-      // distance went below the max distance: reset filter and leave distance alone.
-      filterControl = 0;
-      prevUSDistance = usDistance;
-      usDistance = newDistance;
-    }
-  }
+	// states
+	enum SearchingState {
+		INIT, // First state
+		GAZING_THE_ABYSS, // seeing the wild emptyness
+		YWALL, // it thinks it sees the YWALL
+		GAP, // the corner between the two walls
+		XWALL, // it thinks it sees the XWALL
+		FINISHING, FINISHED;
+	};
+
+	public static SearchingState state = SearchingState.INIT;
+
+	/**
+	 * Stop the robot
+	 */
+	private static void stopTheRobot() {
+		leftMotor.stop(true);
+		rightMotor.stop(false);
+	}
+
+	/**
+	 * set Speed
+	 */
+	private static void setSpeed(int speed) {
+		leftMotor.setSpeed(speed);
+		rightMotor.setSpeed(speed);
+	}
+
+	/**
+	 * rotate counter clock wise
+	 * 
+	 * @param value some rotation
+	 */
+	private static void rotateCounterClockWiseNonBLocking() {
+		leftMotor.backward();
+		rightMotor.forward();
+	}
+
+	@Override
+	public void run() {
+		setSpeed(ROTATE_SPEED);
+		// start by rotating the robot counterclock wise
+		rotateCounterClockWiseNonBLocking();
+		int spaceCounter = 0; // buffer for counting derivative jumps
+		int der = 0; // used to store derivative
+		int prev = 500; // used to store the previous value
+		boolean cont = true; // boolean used to break our of while loop
+		while (cont) {
+			int reading = usPoller.getDistance();
+			if (reading == -1)
+				continue;
+
+			// logic
+			switch (state) {
+			case INIT:
+				// initial stage, filling up the median filter and turning until the reading
+				// from US sensor becomes very large
+				if (reading > TILE_SIZE * 5.0) {
+					spaceCounter++;
+				} else
+					spaceCounter = 0;
+				if (spaceCounter > 3) {
+					state = SearchingState.GAZING_THE_ABYSS;
+					spaceCounter = 0;
+				}
+				break;
+			case GAZING_THE_ABYSS:
+				// when the robot is facing away from the wall
+				if (reading < TILE_SIZE * 1.5) {
+					spaceCounter++;
+				} else
+					spaceCounter = 0;
+				if (spaceCounter > 3) {
+					state = SearchingState.XWALL;
+					setSpeed(15); // slows the robot down to get better readings
+					spaceCounter = 0;
+				}
+				break;
+			case XWALL:
+				// when the robot is facing the x=0 wall
+				der = reading - prev;
+				prev = reading;
+				if (der > 0) {
+					spaceCounter++;
+				}
+				if (spaceCounter > 2) {
+					state = SearchingState.GAP;
+					prev = 500;
+					spaceCounter = 0;
+				}
+				break;
+			case GAP:
+				// corner between the two walls
+				der = reading - prev;
+				prev = reading;
+				if (der < 0) {
+					spaceCounter++;
+				}
+				//else spaceCounter = 0;
+				if (spaceCounter > 4) {
+					state = SearchingState.YWALL;
+					prev = 500;
+					spaceCounter = 0;
+				}
+				break;
+			case YWALL:
+				// when robot is facing the y=0 wall
+				der = reading - prev;
+				prev = reading;
+				if (der > 0) {
+
+					stopTheRobot();
+					// ===========================================
+					setSpeed(80); // These steps are used
+					// leftMotor.forward(); //to ensure alignment
+					// rightMotor.forward(); //by ramming the wall
+					// ===========================================
+					if (prev > 9) {
+						leftMotor.rotate(convertDistance(prev - 9), true);
+						rightMotor.rotate(convertDistance(prev - 9), false);
+					}
+					spaceCounter = 0;
+					state = SearchingState.FINISHED;
+				} 
+				break;
+			case FINISHING:
+				if (spaceCounter < 150) {
+					spaceCounter++;
+				} else {
+					leftMotor.rotate(convertDistance(-8.0), true);
+					rightMotor.rotate(convertDistance(-8.0), false);
+					// backing up from the wall
+					state = SearchingState.FINISHED;
+				}
+				break;
+			case FINISHED:
+				stopTheRobot();
+				cont = false;
+				break;
+			}
+
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		leftMotor.rotate(convertAngle(180.0), true);
+		rightMotor.rotate(-convertAngle(180.0), false);
+		// after the robot is settled, rotates 180 degrees to face the positive y
+		// direction
+	}
+
+	private static int convertDistance(double distance) { // always positive
+		return (int) ((180.0 * distance) / (Math.PI * WHEEL_RAD));
+	}
+
+	private static int convertAngle(double angle) { // can be negative
+		return convertDistance(Math.PI * TRACK * angle / 360.0);
+	}
 }

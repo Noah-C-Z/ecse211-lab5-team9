@@ -37,7 +37,6 @@ public class UltrasonicPoller implements Runnable {
 				break;
 			US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
 			reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-
 			// filling up the median filter and returning -1 as reading
 			if (count < BUFFER_SIZE) {
 				filterBuffer[count] = reading;

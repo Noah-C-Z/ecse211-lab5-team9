@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.lab5;
 
 import java.util.Arrays;
-
 import ca.mcgill.ecse211.lab5.OdometryCorrection.WorkingState;
 import ca.mcgill.ecse211.lab5.Resources;
 
@@ -17,22 +16,25 @@ public class RobotDriver {
 	 * @param x x coordinate of target square
 	 * @param y y coordinate of target square
 	 */
-	public void getReadyToShoot(int x, int y) {
+	public static void getReadyToShoot(final int x, final int y) {
+		Resources.leftMotor.setSpeed(120);
+		Resources.rightMotor.setSpeed(120);
 		(new Thread () {
 			public void run() {
 				int target [] = findTarget(x,y);
 				int[][]moveList =  listOfMoves (target);
 				for (int[] move : moveList) { 
+					//System.out.println(Arrays.toString(move));
 				//YP: this is subject to change because it does not account for negative moves, 
 				//since we always start from 0,0, so subject to change...
 					for (int i = 0; i < move[1]; i++) {
-						Navigation.moveForwardByTile(move[1]);
+						Navigation.moveForwardByTile(1);
 						RobotDriver.y++;
 					}
 					Navigation.turnRight();
 					Resources.odometryCorrection.state = WorkingState.HORIZONTAL; 
 					for (int j = 0; j < move [0]; j++) {
-						Navigation.moveForwardByTile(move[0]);
+						Navigation.moveForwardByTile(1);
 						RobotDriver.x++;
 					}
 					Navigation.turnLeft();
@@ -110,7 +112,6 @@ public class RobotDriver {
 				}
 			}
 		}
-		System.out.println("target is : "+Arrays.toString(result));
 		return result;
 	}
 	

@@ -50,12 +50,12 @@ public class Resources {
   /**
    * The wheel radius in centimeters.
    */
-  public static final double WHEEL_RAD = 2.20;
+  public static final double WHEEL_RAD = 2.19;
 
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 17.3;
+  public static final double TRACK = 17.4;
 
   /**
    * The speed at which the robot moves forward in degrees per second.
@@ -100,12 +100,12 @@ public class Resources {
   /**
    * The left motor.
    */
-  public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+  public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
   /**
    * The right motor.
    */
-  public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+  public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 
   /**
    * The LCD.
@@ -120,12 +120,12 @@ public class Resources {
   /**
    * The ultrasonic sensor.
    */
-  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
+  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S2);
   
   /**
    * The ultrasonic poller.
    */
-  public static UltrasonicPoller usPoller = new UltrasonicPoller();
+  public static final UltrasonicPoller usPoller = new UltrasonicPoller();
   
   /**
    * The color sensor.
@@ -138,8 +138,18 @@ public class Resources {
   public static final OdometryCorrection odometryCorrection = new OdometryCorrection();
   
   /**
+   * Color reader
+   */
+  public static final ColorReader colorReader = new ColorReader();
+  
+  /**
+   * US localizer
+   */
+  public static final UltrasonicLocalizer usLocalizer = new UltrasonicLocalizer();
+  
+  /**
    * The dimensions sizes in squares
    */
-  public static final int ARENA_X = 8;
+  public static final int ARENA_X = 4;
   public static final int ARENA_Y = 8;
 }

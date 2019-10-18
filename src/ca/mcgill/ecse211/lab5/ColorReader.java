@@ -5,14 +5,7 @@ import lejos.robotics.SampleProvider;
 
 public class ColorReader implements Runnable {
 
-	private static boolean isFalling;
-	// true=>measures when entering black line false=>measures then exiting black
-	// line
 	private static final long SENSORTIMERLIMIT = 50;
-
-	public ColorReader(boolean fal) {
-		isFalling = fal;
-	}
 
 	// sensor
 	private static SampleProvider sampleProvider = colorSensor.getRedMode();
