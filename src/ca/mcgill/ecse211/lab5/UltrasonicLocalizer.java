@@ -2,15 +2,14 @@ package ca.mcgill.ecse211.lab5;
 
 import static ca.mcgill.ecse211.lab5.Resources.*;
 
-public class UltrasonicLocalizer implements Runnable{
+public class UltrasonicLocalizer implements Runnable {
 
 	// states
 	enum SearchingState {
 		INIT, // First state
 		GAZING_THE_ABYSS, // seeing the wild emptyness
 		YWALL, // it thinks it sees the YWALL
-		GAP, // the corner between the two walls
-		XWALL, // it thinks it sees the XWALL
+		RAM_Y, BACK_Y, RAM_X, // wall ramming states
 		FINISHING, FINISHED;
 	};
 
@@ -77,12 +76,12 @@ public class UltrasonicLocalizer implements Runnable{
 				} else
 					spaceCounter = 0;
 				if (spaceCounter > 3) {
-					state = SearchingState.XWALL;
+					state = SearchingState.YWALL;
 					setSpeed(15); // slows the robot down to get better readings
 					spaceCounter = 0;
 				}
 				break;
-			case XWALL:
+			case YWALL:
 				// when the robot is facing the x=0 wall
 				der = reading - prev;
 				prev = reading;
@@ -90,72 +89,62 @@ public class UltrasonicLocalizer implements Runnable{
 					spaceCounter++;
 				}
 				if (spaceCounter > 2) {
-					state = SearchingState.GAP;
-					prev = 500;
-					spaceCounter = 0;
-				}
-				break;
-			case GAP:
-				// corner between the two walls
-				der = reading - prev;
-				prev = reading;
-				if (der < 0) {
-					spaceCounter++;
-				}
-				//else spaceCounter = 0;
-				if (spaceCounter > 4) {
-					state = SearchingState.YWALL;
-					prev = 500;
-					spaceCounter = 0;
-				}
-				break;
-			case YWALL:
-				// when robot is facing the y=0 wall
-				der = reading - prev;
-				prev = reading;
-				if (der > 0) {
-
+					setSpeed(80);
 					stopTheRobot();
-					// ===========================================
-					setSpeed(80); // These steps are used
-					// leftMotor.forward(); //to ensure alignment
-					// rightMotor.forward(); //by ramming the wall
-					// ===========================================
-					if (prev > 9) {
-						leftMotor.rotate(convertDistance(prev - 9), true);
-						rightMotor.rotate(convertDistance(prev - 9), false);
-					}
+					state = SearchingState.RAM_Y;
 					spaceCounter = 0;
-					state = SearchingState.FINISHED;
-				} 
+				}
+				break;
+			case RAM_Y:
+				// ram the y axis wall
+				leftMotor.forward();
+				rightMotor.forward();
+				spaceCounter++;
+				if (spaceCounter > 150) {
+					stopTheRobot();
+					state = SearchingState.BACK_Y;
+					spaceCounter = 0;
+				}
+				break;
+			case BACK_Y:
+				// backing off from the y wall
+				setSpeed(ROTATE_SPEED);
+		        leftMotor.rotate(convertDistance(-5.0), true);
+		        rightMotor.rotate(convertDistance(-5.0), false);
+		        leftMotor.rotate(convertAngle(-90.0), true);
+		        rightMotor.rotate(convertAngle(90.0), false);
+		        stopTheRobot();
+		        state = SearchingState.RAM_X;
+				break;
+			case RAM_X:
+				leftMotor.forward();
+				rightMotor.forward();
+				spaceCounter++;
+				if (spaceCounter > 150) {
+					stopTheRobot();
+					state = SearchingState.FINISHING;
+					spaceCounter = 0;
+				}
 				break;
 			case FINISHING:
-				if (spaceCounter < 150) {
-					spaceCounter++;
-				} else {
-					leftMotor.rotate(convertDistance(-8.0), true);
-					rightMotor.rotate(convertDistance(-8.0), false);
-					// backing up from the wall
-					state = SearchingState.FINISHED;
-				}
-				break;
+				leftMotor.rotate(convertDistance(-10.0), true);
+		        rightMotor.rotate(convertDistance(-10.0), false);
+		        leftMotor.rotate(convertAngle(180.0), true);
+		        rightMotor.rotate(convertAngle(-180.0), false); 
+		        //rotate clockwise to avoid running into the wall here
+		        state = SearchingState.FINISHED;
+		        break;
 			case FINISHED:
 				stopTheRobot();
 				cont = false;
 				break;
 			}
-
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		leftMotor.rotate(convertAngle(180.0), true);
-		rightMotor.rotate(-convertAngle(180.0), false);
-		// after the robot is settled, rotates 180 degrees to face the positive y
-		// direction
 	}
 
 	private static int convertDistance(double distance) { // always positive
