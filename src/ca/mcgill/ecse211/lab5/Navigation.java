@@ -205,8 +205,8 @@ public class Navigation {
   public static int[] findTarget(int targetX, int targetY) {
     int[] result = new int[3];
     double shortest_dist = 100;
-    int[][] notableSquares = { { -3, 3 }, { 0, 4 }, { 3, 3 }, { -4, 0 }, { 4, 0 }, { -3, -3 }, { 0, -4 }, { 3, -3 } };
-    int[] thetaOptions = { 315, 0, 45, 90, 135, 180, 225, 270 };
+    int[][] notableSquares = { { 0, 4 }, { 3, 3 }, { 4, 0 }, { 3, -3 }, { 0, -4 }, { -3, -3 }, { -4, 0 }, { -3, 3 } };
+    int[] thetaOptions = { 0, 45, 90, 135, 180, 225, 270, 315 };
 
     for (int i = 0; i < notableSquares.length; i++) {
       int[] pair = notableSquares[i];
