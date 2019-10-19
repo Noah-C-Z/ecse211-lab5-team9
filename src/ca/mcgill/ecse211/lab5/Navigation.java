@@ -173,7 +173,7 @@ public class Navigation {
    * 
    * @param i number of tile lengths
    */
-  public static void moveForwardByTile(int i) {
+  public static void moveForwardByTile(double i) {
     leftMotor.rotate(convertDistance(TILE_SIZE * i), true);
     rightMotor.rotate(convertDistance(TILE_SIZE * i), false);
   }
@@ -205,8 +205,8 @@ public class Navigation {
   public static int[] findTarget(int targetX, int targetY) {
     int[] result = new int[3];
     double shortest_dist = 100;
-    int[][] notableSquares = { { 0, 4 }, { 3, 3 }, { 4, 0 }, { 3, -3 }, { 0, -4 }, { -3, -3 }, { -4, 0 }, { -3, 3 } };
-    int[] thetaOptions = { 0, 45, 90, 135, 180, 225, 270, 315 };
+    int[][] notableSquares = { { 0, 5 }, { 4, 4 }, { 5, 0 }, { 4, -4 }, { 0, -5 }, { -4, -4 }, { -5, 0 }, { -4, 4 } };
+    int[] thetaOptions = { 180, 225, 270, 315, 0, 45, 90, 135 };
 
     for (int i = 0; i < notableSquares.length; i++) {
       int[] pair = notableSquares[i];
@@ -220,7 +220,8 @@ public class Navigation {
           result[0] = pair[0] + targetX;
           result[1] = pair[1] + targetY;
           shortest_dist = dist;
-          result[2] = thetaOptions[i];
+          result[2] = (thetaOptions[i] - 90 + 360)% 360;
+          System.out.println("target changed to : " + result[0] + " " + result[1] + " " + result[2]);
         }
       }
     }

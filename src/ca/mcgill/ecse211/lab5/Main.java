@@ -5,13 +5,16 @@ import static ca.mcgill.ecse211.lab5.Resources.odometryCorrection;
 import static ca.mcgill.ecse211.lab5.Resources.usLocalizer;
 import static ca.mcgill.ecse211.lab5.Resources.usPoller;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 /**
  * The main driver class for the odometry lab.
  */
 public class Main {
-  public static final int TARGETX = 2;
-  public static final int TARGETY = 6;
+  public static final int TARGETX = 0;
+  public static final int TARGETY = 0;
 
 
   /**
@@ -49,13 +52,21 @@ public class Main {
 
     // Navigate
     int[] destination = Navigation.findTarget(TARGETX, TARGETY);
-    Navigation.moveForwardByTile(destination[0]);
-    Navigation.turnRight();
     Navigation.moveForwardByTile(destination[1]);
+    Navigation.turnRight();
+    Navigation.moveForwardByTile(destination[0]);
     Navigation.turnTo(destination[2]);
+    if (destination[2]%90 > 0) {
+    	Navigation.moveForwardByTile(0.2);
+    }
     Button.waitForAnyPress();
 
     // shoot
+    final EV3LargeRegulatedMotor shooterMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+    
+    shooterMotor.rotate(-190);
+    Sound.twoBeeps();
+    shooterMotor.rotate(190);
     System.exit(0);
   }
 

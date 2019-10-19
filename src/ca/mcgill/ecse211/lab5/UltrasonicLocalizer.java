@@ -121,7 +121,7 @@ public class UltrasonicLocalizer implements Runnable {
     prev = reading;
 
     if(der > 0) {
-      setSpeed(80);
+      setSpeed(FORWARD_SPEED);
       stopTheRobot();
       state = SearchingState.RAM_Y;
       spaceCounter = 0;
@@ -148,8 +148,8 @@ public class UltrasonicLocalizer implements Runnable {
    */
   private static void backOffFromYWall() {
     setSpeed(FORWARD_SPEED);
-    leftMotor.rotate(convertDistance(-6.0), true);
-    rightMotor.rotate(convertDistance(-6.0), false);
+    leftMotor.rotate(convertDistance(-7.0), true);
+    rightMotor.rotate(convertDistance(-7.0), false);
     leftMotor.rotate(convertAngle(-90.0), true);
     rightMotor.rotate(convertAngle(90.0), false);
     stopTheRobot();

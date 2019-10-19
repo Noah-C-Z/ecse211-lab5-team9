@@ -55,20 +55,20 @@ public class Resources {
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 18.6;
+  public static final double TRACK = 18.56;
 
   /**
    * The speed at which the robot moves forward in degrees per second.
    */
-  public static final int FORWARD_SPEED = 180;
+  public static final int FORWARD_SPEED = 150;
 
   /**
    * The speed at which the robot rotates in degrees per second.
    */
-  public static final int ROTATE_SPEED = 120;
+  public static final int ROTATE_SPEED = 100;
   
   /**
-   * Low speed used for more accurate sensor readins
+   * Low speed used for more accurate sensor radians
    */
   public static final int LOW_SPEED = 15;
 
@@ -151,6 +151,6 @@ public class Resources {
   /**
    * The dimensions sizes in squares
    */
-  public static final int ARENA_X = 4;
-  public static final int ARENA_Y = 8;
+  public static final int ARENA_X = 7;
+  public static final int ARENA_Y = 7;
 }
