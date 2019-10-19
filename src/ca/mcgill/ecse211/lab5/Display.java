@@ -13,7 +13,6 @@ public class Display implements Runnable {
   private long timeout = Long.MAX_VALUE;
 
   public void run() {
-
     LCD.clear();
 
     long updateStart, updateEnd;

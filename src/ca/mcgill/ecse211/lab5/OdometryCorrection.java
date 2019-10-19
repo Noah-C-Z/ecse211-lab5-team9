@@ -14,16 +14,19 @@ public class OdometryCorrection implements Runnable{
 			case HORIZONTAL:
 				if (ColorReader.detectBlackLine()) {
 					Sound.beep();
-					Odometer.getOdometer().setX(RobotDriver.x*Resources.TILE_SIZE+Resources.SENSOR_RADIUS);
+					Odometer.getOdometer().setX(Navigation.xTile*Resources.TILE_SIZE+Resources.SENSOR_RADIUS);
+					Navigation.xTile++;
 					break;
 				}
 			case VERTICAL:
 				if (ColorReader.detectBlackLine()) {
 					Sound.beep();
-					Odometer.getOdometer().setY(RobotDriver.y*Resources.TILE_SIZE+Resources.SENSOR_RADIUS);
+					Odometer.getOdometer().setY(Navigation.yTile*Resources.TILE_SIZE+Resources.SENSOR_RADIUS);
+					Navigation.yTile++;
 					break;
 				}
 			}
 		}
 	}
 }
+// ELIAS

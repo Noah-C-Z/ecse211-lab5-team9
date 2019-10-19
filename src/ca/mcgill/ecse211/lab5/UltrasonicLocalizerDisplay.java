@@ -4,7 +4,7 @@ import static ca.mcgill.ecse211.lab5.Resources.LCD;
 import static ca.mcgill.ecse211.lab5.Resources.usPoller;
 
 
-public class AlignmentDriverDisplay implements Runnable {
+public class UltrasonicLocalizerDisplay implements Runnable {
 
   private final long DISPLAY_PERIOD = 550; //display refresh rate
   public static boolean kill = false; //kill switch for the thread
@@ -15,8 +15,8 @@ public class AlignmentDriverDisplay implements Runnable {
     long updateStart, updateEnd;
     long tStart = System.currentTimeMillis();
     do {
-      if(kill) break;
       LCD.clear();
+      if(kill) break;
       updateStart = System.currentTimeMillis();
       LCD.drawString(UltrasonicLocalizer.state.toString(), 0, 0);
       LCD.drawString("" + usPoller.getDistance(), 0, 1);
