@@ -13,8 +13,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  * The main driver class for the odometry lab.
  */
 public class Main {
-  public static final int TARGETX = 0;
-  public static final int TARGETY = 0;
+  public static final int TARGETX = 1;
+  public static final int TARGETY = 1;
 
 
   /**
@@ -31,7 +31,6 @@ public class Main {
     b.start();
     c.start();
     Button.waitForAnyPress();
-
     // Phase 2
     UltrasonicPoller.kill = true;
     UltrasonicLocalizerDisplay.kill = true;
@@ -57,16 +56,22 @@ public class Main {
     Navigation.moveForwardByTile(destination[0]);
     Navigation.turnTo(destination[2]);
     if (destination[2]%90 > 0) {
-    	Navigation.moveForwardByTile(0.2);
+    	Navigation.moveForwardByTile(0.4);
     }
-    Button.waitForAnyPress();
 
     // shoot
     final EV3LargeRegulatedMotor shooterMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+    shooterMotor.setSpeed(150);
     
-    shooterMotor.rotate(-190);
-    Sound.twoBeeps();
-    shooterMotor.rotate(190);
+    int shots = 0;
+    while (shots < 5) {
+    	shooterMotor.rotate(-190);
+        Sound.twoBeeps();
+        shooterMotor.rotate(225);
+        Button.waitForAnyPress();
+        shots++;
+    }
+    
     System.exit(0);
   }
 
