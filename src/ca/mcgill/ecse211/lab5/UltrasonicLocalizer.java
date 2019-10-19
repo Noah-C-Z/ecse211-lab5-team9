@@ -119,10 +119,8 @@ public class UltrasonicLocalizer implements Runnable {
   private static void detectYWall() {
     der = reading - prev;
     prev = reading;
-    if (der > 0) {
-      spaceCounter++;
-    }
-    if (spaceCounter > 2) {
+
+    if(der > 0) {
       setSpeed(80);
       stopTheRobot();
       state = SearchingState.RAM_Y;
@@ -138,7 +136,7 @@ public class UltrasonicLocalizer implements Runnable {
     leftMotor.forward();
     rightMotor.forward();
     spaceCounter++;
-    if (spaceCounter > 100) {
+    if (spaceCounter > 200) {
       stopTheRobot();
       state = SearchingState.BACK_Y;
       spaceCounter = 0;
@@ -149,9 +147,9 @@ public class UltrasonicLocalizer implements Runnable {
    * the robot backs away from the wall for 5 cm and turns counter-clock-wise to face the x-axis wall.
    */
   private static void backOffFromYWall() {
-    setSpeed(ROTATE_SPEED);
-    leftMotor.rotate(convertDistance(-5.0), true);
-    rightMotor.rotate(convertDistance(-5.0), false);
+    setSpeed(FORWARD_SPEED);
+    leftMotor.rotate(convertDistance(-6.0), true);
+    rightMotor.rotate(convertDistance(-6.0), false);
     leftMotor.rotate(convertAngle(-90.0), true);
     rightMotor.rotate(convertAngle(90.0), false);
     stopTheRobot();
@@ -166,7 +164,7 @@ public class UltrasonicLocalizer implements Runnable {
     leftMotor.forward();
     rightMotor.forward();
     spaceCounter++;
-    if (spaceCounter > 150) {
+    if (spaceCounter > 200) {
       stopTheRobot();
       state = SearchingState.FINISHING;
       spaceCounter = 0;

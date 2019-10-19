@@ -224,6 +224,7 @@ public class Navigation {
         }
       }
     }
+    System.out.println("target is : " + result[0] + " " + result[1] + " " + result[2]);
     return result;
   }
 }

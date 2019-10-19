@@ -49,9 +49,9 @@ public class Main {
 
     // Navigate
     int[] destination = Navigation.findTarget(TARGETX, TARGETY);
-    Navigation.moveForwardByTile(destination[1]);
-    Navigation.turnRight();
     Navigation.moveForwardByTile(destination[0]);
+    Navigation.turnRight();
+    Navigation.moveForwardByTile(destination[1]);
     Navigation.turnTo(destination[2]);
     Button.waitForAnyPress();
 
