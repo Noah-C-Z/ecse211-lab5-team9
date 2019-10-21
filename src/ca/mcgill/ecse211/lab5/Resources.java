@@ -58,7 +58,7 @@ public class Resources {
 	/**
 	 * The robot width in centimeters.
 	 */
-	public static final double TRACK = 18.58;
+	public static final double TRACK = 18.1;
 
 	/**
 	 * The speed at which the robot moves forward in degrees per second.
@@ -99,6 +99,11 @@ public class Resources {
 	 * The distance from the front of the ultrasonic sensor to the wheelbase.
 	 */
 	public static final int US_SENSOR_RADIUS = 5;
+	
+	/**
+	 * speed for the launcher motor
+	 */
+	public static final int SHOOTER_MOTOR_SPEED = 300;
 
 	/**
 	 * The left motor.
