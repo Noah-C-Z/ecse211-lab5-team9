@@ -55,7 +55,11 @@ public class UltrasonicPoller implements Runnable {
 		}
 	}
 
-	// shifting the array for the median filter
+	/**
+	 * this method shifts the array by one position and enters a new integer ad the [0] position
+	 * @param arr array
+	 * @param newI new integer to be added
+	 */
 	void shiftArray(int[] arr, int newI) {
 		int size = arr.length;
 		for (int i = 0; i < size - 1; i++) {
@@ -64,6 +68,10 @@ public class UltrasonicPoller implements Runnable {
 		arr[size - 1] = newI;
 	}
 
+	/**
+	 * get the filtered distance reading
+	 * @return filtered reading of distance
+	 */
 	public int getDistance() {
 		return this.distance;
 	}

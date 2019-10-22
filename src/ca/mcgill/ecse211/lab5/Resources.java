@@ -45,27 +45,32 @@ public class Resources {
   /**
    * Distance to light sensor from center of rotation in centimeters
    */
-  public static final double SENSOR_RADIUS = 12;
+  public static final double SENSOR_RADIUS = 14.3;
   
   /**
    * The wheel radius in centimeters.
    */
-  public static final double WHEEL_RAD = 2.19;
+  public static final double WHEEL_RAD = 2.13;
 
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 17.4;
+  public static final double TRACK = 18.58;
 
   /**
    * The speed at which the robot moves forward in degrees per second.
    */
-  public static final int FORWARD_SPEED = 120;
+  public static final int FORWARD_SPEED = 150;
 
   /**
    * The speed at which the robot rotates in degrees per second.
    */
-  public static final int ROTATE_SPEED = 60;
+  public static final int ROTATE_SPEED = 100;
+  
+  /**
+   * Low speed used for more accurate sensor radians
+   */
+  public static final int LOW_SPEED = 15;
 
   /**
    * The motor acceleration in degrees per second squared.
@@ -82,10 +87,6 @@ public class Resources {
    */
   public static final double TILE_SIZE = 30.48;
 
-  /**
-   * Filter for the distance reported by the ultrasonic sensor.
-   */
-  public static final double FILTER_OUT = 10;
 
   /**
    * The furthest the ultrasonic distance can effectively see.
@@ -150,6 +151,6 @@ public class Resources {
   /**
    * The dimensions sizes in squares
    */
-  public static final int ARENA_X = 4;
-  public static final int ARENA_Y = 8;
+  public static final int ARENA_X = 7;
+  public static final int ARENA_Y = 7;
 }
