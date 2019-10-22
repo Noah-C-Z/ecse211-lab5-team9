@@ -99,7 +99,7 @@ public class Resources {
 	 * The distance from the front of the ultrasonic sensor to the wheelbase.
 	 */
 	public static final int US_SENSOR_RADIUS = 5;
-	
+
 	/**
 	 * speed for the launcher motor
 	 */
@@ -119,7 +119,7 @@ public class Resources {
 	 * motor for the ball launcher
 	 */
 	public static final EV3LargeRegulatedMotor shooterMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-	
+
 	/**
 	 * The LCD.
 	 */
@@ -139,7 +139,6 @@ public class Resources {
 	 * The ultrasonic poller.
 	 */
 	public static final UltrasonicPoller usPoller = new UltrasonicPoller();
-
 
 	/**
 	 * US localizer

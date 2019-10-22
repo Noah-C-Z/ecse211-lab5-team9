@@ -11,7 +11,7 @@ import lejos.hardware.Sound;
  * The main driver class for the odometry lab.
  */
 public class Main {
-	public static final int TARGETX = 3;
+	public static final int TARGETX = 6;
 	public static final int TARGETY = 3;
 
 	/**
@@ -20,7 +20,21 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// Phase 1: localize using US sensor and rammer
+
+		// ***Part one of the demo: static shooting*** //
+		int shots = 0;
+		while (shots < 5) {
+			shooterMotor.rotate(-190); // cock the launcher
+			Sound.twoBeeps(); // beep for dramatic effect
+			shooterMotor.rotate(240); // shoot
+			shooterMotor.rotate(-50); // reset angle
+			Button.waitForAnyPress(); // wait for reload
+			shots++;
+		}
+
+		// ***Part two of the demo: move to a square and launch the ball*** //
+
+		// ==== Phase 1: localize using US sensor and rammer ==== //
 		Thread pollerThread = new Thread(usPoller);
 		Thread localizerThread = new Thread(usLocalizer);
 		Thread localizerDisplayThread = new Thread(new UltrasonicLocalizerDisplay());
@@ -28,10 +42,11 @@ public class Main {
 		localizerThread.start();
 		localizerDisplayThread.start();
 		Button.waitForAnyPress();
-		// Phase 2: Navigate to position and take aim
+
+		// ==== Phase 2: Navigate to position and take aim ==== //
+		// killing all previous threads
 		UltrasonicPoller.kill = true;
 		UltrasonicLocalizerDisplay.kill = true;
-
 		try {
 			pollerThread.join(5000);
 			localizerThread.join(5000);
@@ -41,24 +56,16 @@ public class Main {
 		}
 
 		// Navigate
-		int[] destination = Navigation.findTarget(TARGETX, TARGETY);
-		Navigation.moveForwardByTile(destination[1]);
-		Navigation.turnRight();
-		Navigation.moveForwardByTile(destination[0]);
-		Navigation.turnTo(destination[2]);
-		if (destination[2] % 90 > 0) {
-			Navigation.moveForwardByTile(0.5);
-		}
+		Navigation.getReadyToShoot(TARGETX, TARGETY);
 
-		// Phase 3: shoot the ball
-		shooterMotor.setSpeed(SHOOTER_MOTOR_SPEED);
-		int shots = 0;
+		// ==== Phase 3: launch the ball ==== //
+		shots = 0;
 		while (shots < 5) {
-			shooterMotor.rotate(-190); 	//cock the launcher
-			Sound.twoBeeps();			//beep for dramatic effect
-			shooterMotor.rotate(240); 	//shoot
-			shooterMotor.rotate(-50); 	//reset angle
-			Button.waitForAnyPress();	//wait for reload
+			shooterMotor.rotate(-190); // cock the launcher
+			Sound.twoBeeps(); // beep for dramatic effect
+			shooterMotor.rotate(240); // shoot
+			shooterMotor.rotate(-50); // reset angle
+			Button.waitForAnyPress(); // wait for reload
 			shots++;
 		}
 

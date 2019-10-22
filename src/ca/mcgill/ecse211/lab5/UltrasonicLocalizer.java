@@ -16,8 +16,6 @@ public class UltrasonicLocalizer implements Runnable {
 	public static SearchingState state = SearchingState.INIT;
 
 	private static int spaceCounter = 0; // buffer for counting derivative jumps
-	private static int der = 0; // used to store derivative
-	private static int prev = 500; // used to store the previous value
 	private static int reading; // place holder to store the reading from the sensor
 
 	@Override
@@ -118,8 +116,6 @@ public class UltrasonicLocalizer implements Runnable {
 	 * we know that the robot is relatively perpendicular to the y-axis wall
 	 */
 	private static void detectYWall() {
-		der = reading - prev;
-		prev = reading;
 		if (spaceCounter < 40) {
 			spaceCounter++;
 		} else {
@@ -207,8 +203,6 @@ public class UltrasonicLocalizer implements Runnable {
 
 	/**
 	 * rotate counter clock wise
-	 * 
-	 * @param value some rotation
 	 */
 	private static void rotateCounterClockWiseNonBLocking() {
 		leftMotor.backward();
