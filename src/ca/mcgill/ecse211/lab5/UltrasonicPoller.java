@@ -56,8 +56,10 @@ public class UltrasonicPoller implements Runnable {
 	}
 
 	/**
-	 * this method shifts the array by one position and enters a new integer ad the [0] position
-	 * @param arr array
+	 * this method shifts the array by one position and enters a new integer ad the
+	 * [0] position
+	 * 
+	 * @param arr  array
 	 * @param newI new integer to be added
 	 */
 	void shiftArray(int[] arr, int newI) {
@@ -70,6 +72,7 @@ public class UltrasonicPoller implements Runnable {
 
 	/**
 	 * get the filtered distance reading
+	 * 
 	 * @return filtered reading of distance
 	 */
 	public int getDistance() {

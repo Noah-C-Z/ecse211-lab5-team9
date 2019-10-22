@@ -1,85 +1,82 @@
 package ca.mcgill.ecse211.lab5;
 
-import static ca.mcgill.ecse211.lab5.Resources.colorReader;
-import static ca.mcgill.ecse211.lab5.Resources.odometryCorrection;
 import static ca.mcgill.ecse211.lab5.Resources.usLocalizer;
 import static ca.mcgill.ecse211.lab5.Resources.usPoller;
+import static ca.mcgill.ecse211.lab5.Resources.shooterMotor;
+import static ca.mcgill.ecse211.lab5.Resources.SHOOTER_MOTOR_SPEED;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 /**
  * The main driver class for the odometry lab.
  */
 public class Main {
-  public static final int TARGETX = 1;
-  public static final int TARGETY = 1;
+	public static final int TARGETX = 6;
+	public static final int TARGETY = 3;
 
+	/**
+	 * The main entry point.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
 
-  /**
-   * The main entry point.
-   * 
-   * @param args
-   */
-  public static void main(String[] args) {
-    // Phase 1
-    Thread a = new Thread(usPoller);
-    Thread b = new Thread(usLocalizer);
-    Thread c = new Thread(new UltrasonicLocalizerDisplay());
-    a.start();
-    b.start();
-    c.start();
-    Button.waitForAnyPress();
-    // Phase 2
-    UltrasonicPoller.kill = true;
-    UltrasonicLocalizerDisplay.kill = true;
+		// ***Part one of the demo: static shooting*** //
+		int shots = 0;
+		while (shots < 5) {
+			shooterMotor.rotate(-190); // cock the launcher
+			Sound.twoBeeps(); // beep for dramatic effect
+			shooterMotor.rotate(240); // shoot
+			shooterMotor.rotate(-50); // reset angle
+			Button.waitForAnyPress(); // wait for reload
+			shots++;
+		}
 
-    try {
-      a.join(5000);
-      b.join(5000);
-      c.join(5000);
-    } catch (InterruptedException e1) {
-      e1.printStackTrace();
-    }
+		// ***Part two of the demo: move to a square and launch the ball*** //
 
+		// ==== Phase 1: localize using US sensor and rammer ==== //
+		Thread pollerThread = new Thread(usPoller);
+		Thread localizerThread = new Thread(usLocalizer);
+		Thread localizerDisplayThread = new Thread(new UltrasonicLocalizerDisplay());
+		pollerThread.start();
+		localizerThread.start();
+		localizerDisplayThread.start();
+		Button.waitForAnyPress();
 
-    Thread d = new Thread(colorReader);
-    Thread e = new Thread(odometryCorrection);
-    d.start();
-    e.start();
+		// ==== Phase 2: Navigate to position and take aim ==== //
+		// killing all previous threads
+		UltrasonicPoller.kill = true;
+		UltrasonicLocalizerDisplay.kill = true;
+		try {
+			pollerThread.join(5000);
+			localizerThread.join(5000);
+			localizerDisplayThread.join(5000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 
-    // Navigate
-    int[] destination = Navigation.findTarget(TARGETX, TARGETY);
-    Navigation.moveForwardByTile(destination[1]);
-    Navigation.turnRight();
-    Navigation.moveForwardByTile(destination[0]);
-    Navigation.turnTo(destination[2]);
-    if (destination[2]%90 > 0) {
-    	Navigation.moveForwardByTile(0.4);
-    }
+		// Navigate
+		Navigation.getReadyToShoot(TARGETX, TARGETY);
 
-    // shoot
-    final EV3LargeRegulatedMotor shooterMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-    shooterMotor.setSpeed(150);
-    
-    int shots = 0;
-    while (shots < 5) {
-    	shooterMotor.rotate(-190);
-        Sound.twoBeeps();
-        shooterMotor.rotate(225);
-        Button.waitForAnyPress();
-        shots++;
-    }
-    
-    System.exit(0);
-  }
+		// ==== Phase 3: launch the ball ==== //
+		shots = 0;
+		while (shots < 5) {
+			shooterMotor.rotate(-190); // cock the launcher
+			Sound.twoBeeps(); // beep for dramatic effect
+			shooterMotor.rotate(240); // shoot
+			shooterMotor.rotate(-50); // reset angle
+			Button.waitForAnyPress(); // wait for reload
+			shots++;
+		}
 
-  public static void sleepFor(long duration) {
-    try {
-      Thread.sleep(duration);
-    } catch (InterruptedException e) {
-      // There is nothing to be done here
-    }
-  }
+		System.exit(0);
+	}
+
+	public static void sleepFor(long duration) {
+		try {
+			Thread.sleep(duration);
+		} catch (InterruptedException e) {
+			// There is nothing to be done here
+		}
+	}
 }
